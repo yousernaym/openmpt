@@ -1576,6 +1576,74 @@ std::uint8_t module_impl::get_pattern_row_channel_command( std::int32_t p, std::
 	return 0;
 }
 
+// Visual Music extensions: read-only accessors into instrument/sample metadata.
+// Instrument/sample indices are 1-based; note is 1..128.
+bool module_impl::vm_has_instruments() const {
+	return m_sndFile->GetNumInstruments() > 0;
+}
+std::int32_t module_impl::vm_get_note_sample( std::int32_t instrument, std::int32_t note ) const {
+	if ( instrument < 1 || instrument > m_sndFile->GetNumInstruments() || !m_sndFile->Instruments[instrument] || note < 1 || note > 128 ) {
+		return 0;
+	}
+	return m_sndFile->Instruments[instrument]->Keyboard[note - 1];
+}
+std::int32_t module_impl::vm_get_note_map( std::int32_t instrument, std::int32_t note ) const {
+	if ( instrument < 1 || instrument > m_sndFile->GetNumInstruments() || !m_sndFile->Instruments[instrument] || note < 1 || note > 128 ) {
+		return note;
+	}
+	return m_sndFile->Instruments[instrument]->NoteMap[note - 1];
+}
+std::int32_t module_impl::vm_get_instrument_global_vol( std::int32_t instrument ) const {
+	if ( instrument < 1 || instrument > m_sndFile->GetNumInstruments() || !m_sndFile->Instruments[instrument] ) {
+		return 64;
+	}
+	return m_sndFile->Instruments[instrument]->nGlobalVol;
+}
+bool module_impl::vm_get_vol_env_one_shot_zero_end( std::int32_t instrument ) const {
+	if ( instrument < 1 || instrument > m_sndFile->GetNumInstruments() || !m_sndFile->Instruments[instrument] ) {
+		return false;
+	}
+	const OpenMPT::InstrumentEnvelope & env = m_sndFile->Instruments[instrument]->VolEnv;
+	if ( env.empty() || !env.dwFlags[OpenMPT::ENV_ENABLED] || env.dwFlags[OpenMPT::ENV_SUSTAIN] || env.dwFlags[OpenMPT::ENV_LOOP] ) {
+		return false;
+	}
+	return env.back().value == 0;
+}
+std::int32_t module_impl::vm_get_vol_env_end_tick( std::int32_t instrument ) const {
+	if ( instrument < 1 || instrument > m_sndFile->GetNumInstruments() || !m_sndFile->Instruments[instrument] ) {
+		return 0;
+	}
+	const OpenMPT::InstrumentEnvelope & env = m_sndFile->Instruments[instrument]->VolEnv;
+	if ( env.empty() ) {
+		return 0;
+	}
+	return env.back().tick;
+}
+std::int64_t module_impl::vm_get_sample_length( std::int32_t sample ) const {
+	if ( sample < 1 || sample > m_sndFile->GetNumSamples() ) {
+		return 0;
+	}
+	return m_sndFile->GetSample( static_cast<OpenMPT::SAMPLEINDEX>( sample ) ).nLength;
+}
+bool module_impl::vm_get_sample_loops( std::int32_t sample ) const {
+	if ( sample < 1 || sample > m_sndFile->GetNumSamples() ) {
+		return false;
+	}
+	return m_sndFile->GetSample( static_cast<OpenMPT::SAMPLEINDEX>( sample ) ).uFlags[OpenMPT::CHN_LOOP];
+}
+std::int64_t module_impl::vm_get_sample_loop_end( std::int32_t sample ) const {
+	if ( sample < 1 || sample > m_sndFile->GetNumSamples() ) {
+		return 0;
+	}
+	return m_sndFile->GetSample( static_cast<OpenMPT::SAMPLEINDEX>( sample ) ).nLoopEnd;
+}
+std::int32_t module_impl::vm_get_sample_c5speed( std::int32_t sample ) const {
+	if ( sample < 1 || sample > m_sndFile->GetNumSamples() ) {
+		return 8363;
+	}
+	return m_sndFile->GetSample( static_cast<OpenMPT::SAMPLEINDEX>( sample ) ).nC5Speed;
+}
+
 /*
 
 highlight chars explained:

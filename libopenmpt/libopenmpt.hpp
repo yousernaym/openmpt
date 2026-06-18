@@ -1095,6 +1095,31 @@ public:
 	*/
 	LIBOPENMPT_CXX_API_MEMBER std::uint8_t get_pattern_row_channel_command( std::int32_t pattern, std::int32_t row, std::int32_t channel, int command ) const;
 
+	// Visual Music extensions: read-only accessors into instrument/sample metadata
+	// needed for note-end detection during MIDI extraction.
+	// Instrument and sample indices are 1-based; note is 1..128 (NOTE_MIN..NOTE_MAX).
+
+	//! \return true if the module uses instruments (as opposed to bare samples).
+	LIBOPENMPT_CXX_API_MEMBER bool vm_has_instruments() const;
+	//! \return the sample index (1-based, 0 = none) mapped to the given note of an instrument.
+	LIBOPENMPT_CXX_API_MEMBER std::int32_t vm_get_note_sample( std::int32_t instrument, std::int32_t note ) const;
+	//! \return the note (1..128) that the given note of an instrument is mapped to.
+	LIBOPENMPT_CXX_API_MEMBER std::int32_t vm_get_note_map( std::int32_t instrument, std::int32_t note ) const;
+	//! \return the instrument global volume (0..64).
+	LIBOPENMPT_CXX_API_MEMBER std::int32_t vm_get_instrument_global_vol( std::int32_t instrument ) const;
+	//! \return true if the volume envelope is enabled, non-looping, non-sustaining and ends at value 0.
+	LIBOPENMPT_CXX_API_MEMBER bool vm_get_vol_env_one_shot_zero_end( std::int32_t instrument ) const;
+	//! \return the tick position of the last volume-envelope node (0 if no envelope).
+	LIBOPENMPT_CXX_API_MEMBER std::int32_t vm_get_vol_env_end_tick( std::int32_t instrument ) const;
+	//! \return the sample length in frames.
+	LIBOPENMPT_CXX_API_MEMBER std::int64_t vm_get_sample_length( std::int32_t sample ) const;
+	//! \return true if the sample loops.
+	LIBOPENMPT_CXX_API_MEMBER bool vm_get_sample_loops( std::int32_t sample ) const;
+	//! \return the sample loop end position in frames.
+	LIBOPENMPT_CXX_API_MEMBER std::int64_t vm_get_sample_loop_end( std::int32_t sample ) const;
+	//! \return the frequency of middle-C for the sample, in Hz.
+	LIBOPENMPT_CXX_API_MEMBER std::int32_t vm_get_sample_c5speed( std::int32_t sample ) const;
+
 	//! Get formatted (human-readable) pattern content
 	/*!
 	  \param pattern The pattern whose data should be retrieved.

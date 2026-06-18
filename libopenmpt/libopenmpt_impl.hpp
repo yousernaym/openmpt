@@ -260,6 +260,17 @@ public:
 	std::int32_t get_pattern_rows_per_beat( std::int32_t pattern ) const;
 	std::int32_t get_pattern_rows_per_measure( std::int32_t pattern ) const;
 	std::uint8_t get_pattern_row_channel_command( std::int32_t p, std::int32_t r, std::int32_t c, int cmd ) const;
+	// Visual Music extensions (see libopenmpt.hpp).
+	bool vm_has_instruments() const;
+	std::int32_t vm_get_note_sample( std::int32_t instrument, std::int32_t note ) const;
+	std::int32_t vm_get_note_map( std::int32_t instrument, std::int32_t note ) const;
+	std::int32_t vm_get_instrument_global_vol( std::int32_t instrument ) const;
+	bool vm_get_vol_env_one_shot_zero_end( std::int32_t instrument ) const;
+	std::int32_t vm_get_vol_env_end_tick( std::int32_t instrument ) const;
+	std::int64_t vm_get_sample_length( std::int32_t sample ) const;
+	bool vm_get_sample_loops( std::int32_t sample ) const;
+	std::int64_t vm_get_sample_loop_end( std::int32_t sample ) const;
+	std::int32_t vm_get_sample_c5speed( std::int32_t sample ) const;
 	std::string format_pattern_row_channel_command( std::int32_t p, std::int32_t r, std::int32_t c, int cmd ) const;
 	std::string highlight_pattern_row_channel_command( std::int32_t p, std::int32_t r, std::int32_t c, int cmd ) const;
 	std::string format_pattern_row_channel( std::int32_t p, std::int32_t r, std::int32_t c, std::size_t width, bool pad ) const;

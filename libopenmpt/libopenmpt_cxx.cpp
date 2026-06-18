@@ -433,6 +433,37 @@ std::uint8_t module::get_pattern_row_channel_command( std::int32_t pattern, std:
 	return impl->get_pattern_row_channel_command( pattern, row, channel, command );
 }
 
+bool module::vm_has_instruments() const {
+	return impl->vm_has_instruments();
+}
+std::int32_t module::vm_get_note_sample( std::int32_t instrument, std::int32_t note ) const {
+	return impl->vm_get_note_sample( instrument, note );
+}
+std::int32_t module::vm_get_note_map( std::int32_t instrument, std::int32_t note ) const {
+	return impl->vm_get_note_map( instrument, note );
+}
+std::int32_t module::vm_get_instrument_global_vol( std::int32_t instrument ) const {
+	return impl->vm_get_instrument_global_vol( instrument );
+}
+bool module::vm_get_vol_env_one_shot_zero_end( std::int32_t instrument ) const {
+	return impl->vm_get_vol_env_one_shot_zero_end( instrument );
+}
+std::int32_t module::vm_get_vol_env_end_tick( std::int32_t instrument ) const {
+	return impl->vm_get_vol_env_end_tick( instrument );
+}
+std::int64_t module::vm_get_sample_length( std::int32_t sample ) const {
+	return impl->vm_get_sample_length( sample );
+}
+bool module::vm_get_sample_loops( std::int32_t sample ) const {
+	return impl->vm_get_sample_loops( sample );
+}
+std::int64_t module::vm_get_sample_loop_end( std::int32_t sample ) const {
+	return impl->vm_get_sample_loop_end( sample );
+}
+std::int32_t module::vm_get_sample_c5speed( std::int32_t sample ) const {
+	return impl->vm_get_sample_c5speed( sample );
+}
+
 std::string module::format_pattern_row_channel_command( std::int32_t pattern, std::int32_t row, std::int32_t channel, int command ) const {
 	return impl->format_pattern_row_channel_command( pattern, row, channel, command );
 }
