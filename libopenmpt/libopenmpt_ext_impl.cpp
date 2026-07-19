@@ -197,15 +197,24 @@ namespace openmpt {
 		if ( channel < 0 || channel >= get_num_channels() ) {
 			throw openmpt::exception("invalid channel");
 		}
-		m_sndFile->ChnSettings[channel].dwFlags.set( OpenMPT::CHN_MUTE | OpenMPT::CHN_SYNCMUTE , mute );
-		m_sndFile->m_PlayState.Chn[channel].dwFlags.set( OpenMPT::CHN_MUTE | OpenMPT::CHN_SYNCMUTE , mute );
+		// Mute with CHN_SYNCMUTE only (same as CSoundFile::GetChannelMuteFlag() in libopenmpt
+		// builds). Previously this also set CHN_MUTE, which breaks S3M per-channel export: with
+		// kST3NoMutedChannels, muted channels skip note/effect processing, so global jumps/speed/
+		// breaks on other channels are ignored and solo WAVs desync from the mixdown/MIDI.
+		// OpenMPT's own multi-channel exporter uses SYNCMUTE-only for that reason (Moddoc.cpp).
+		// Clear both flags first so a leftover CHN_MUTE cannot keep S3M effect-skipping active.
+		m_sndFile->ChnSettings[channel].dwFlags.reset( OpenMPT::CHN_MUTE | OpenMPT::CHN_SYNCMUTE );
+		m_sndFile->m_PlayState.Chn[channel].dwFlags.reset( OpenMPT::CHN_MUTE | OpenMPT::CHN_SYNCMUTE );
+		m_sndFile->ChnSettings[channel].dwFlags.set( OpenMPT::CHN_SYNCMUTE, mute );
+		m_sndFile->m_PlayState.Chn[channel].dwFlags.set( OpenMPT::CHN_SYNCMUTE, mute );
 
 		// Also update NNA channels
 		for ( OpenMPT::CHANNELINDEX i = m_sndFile->GetNumChannels(); i < OpenMPT::MAX_CHANNELS; i++)
 		{
 			if ( m_sndFile->m_PlayState.Chn[i].nMasterChn == channel + 1)
 			{
-				m_sndFile->m_PlayState.Chn[i].dwFlags.set( OpenMPT::CHN_MUTE | OpenMPT::CHN_SYNCMUTE, mute );
+				m_sndFile->m_PlayState.Chn[i].dwFlags.reset( OpenMPT::CHN_MUTE | OpenMPT::CHN_SYNCMUTE );
+				m_sndFile->m_PlayState.Chn[i].dwFlags.set( OpenMPT::CHN_SYNCMUTE, mute );
 			}
 		}
 	}
